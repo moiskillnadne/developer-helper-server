@@ -3,6 +3,8 @@ import { CognitoService } from '../../integrations/Cognito/cognito.service'
 import { SignupBodyDTO } from './dto/user-controller.dto'
 import { UserCrudService } from './user.crud'
 import { SuccessResponseCodes } from '../../core/dictionary/success.codes'
+import { InternalServerError } from '../../core/errors/internal-server'
+import { ErrorResponseCodes } from '../../core/dictionary/error.codes'
 
 @Injectable()
 export class UserService {
@@ -16,7 +18,7 @@ export class UserService {
     const cognitoResult = await this.cognitoService.signUp({ email: payload.email, password: payload.password })
 
     if (!cognitoResult.isSuccess) {
-      throw new Error('Произошла ошибка во время создания аккаунта!')
+      throw new InternalServerError('Произошла ошибка во время создания аккаунта!', ErrorResponseCodes.SIGNUP_FAILED)
     }
 
     const userCrudResult = await this.userCrudService.save({
