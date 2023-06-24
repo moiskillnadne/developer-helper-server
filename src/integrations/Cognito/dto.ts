@@ -3,6 +3,7 @@ import { AWSError } from 'aws-sdk'
 export class CognitoSignupPayloadDTO {
   public email: string
   public password: string
+  public username: string
 }
 
 export class SuccessAwsReturnDTO<T> {

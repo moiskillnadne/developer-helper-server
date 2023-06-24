@@ -27,12 +27,18 @@ export class CognitoService {
   async signUp(
     userInfo: CognitoSignupPayloadDTO,
   ): Promise<SuccessAwsReturnDTO<CognitoIdentityServiceProvider.SignUpResponse> | FailedAwsReturnDTO> {
-    const { password, email } = userInfo
+    const { password, email, username } = userInfo
 
     const params: CognitoIdentityServiceProvider.SignUpRequest = {
       ClientId: this.clientId,
       Password: password,
-      Username: email,
+      Username: username,
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: email,
+        },
+      ],
     }
 
     try {
@@ -52,8 +58,8 @@ export class CognitoService {
   async login(
     username: string,
     password: string,
-  ): Promise<CognitoIdentityServiceProvider.InitiateAuthResponse | AWSError> {
-    const params = {
+  ): Promise<SuccessAwsReturnDTO<CognitoIdentityServiceProvider.InitiateAuthResponse> | FailedAwsReturnDTO> {
+    const params: CognitoIdentityServiceProvider.Types.InitiateAuthRequest = {
       AuthFlow: this.authFlow,
       ClientId: this.clientId,
       AuthParameters: {
@@ -64,9 +70,16 @@ export class CognitoService {
 
     try {
       const result = await this.cognitoIdentity.initiateAuth(params).promise()
-      return result
+      return {
+        isSuccess: true,
+        result,
+      }
     } catch (e) {
-      throw e
+      console.error(e)
+      return {
+        isSuccess: false,
+        result: e,
+      }
     }
   }
 

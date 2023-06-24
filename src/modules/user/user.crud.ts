@@ -18,4 +18,8 @@ export class UserCrudService {
   public getById({ id }: GetUserByIdPayloadDTO): Promise<UserEntity | null> {
     return this.userRepository.findOne({ where: { id } })
   }
+
+  public getByParams(params: Partial<UserEntity>): Promise<UserEntity | null> {
+    return this.userRepository.findOne({ where: params })
+  }
 }

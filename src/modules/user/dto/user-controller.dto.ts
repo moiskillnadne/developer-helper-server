@@ -4,6 +4,19 @@ import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator'
 import { messageWrapper } from '../../../core/helpers/validator/messageWrapper'
 import { PASSWORD_MIN_LENGTH, passwordRequiredRulesRegExp } from '../../../core/constants/password'
 
+export class LoginBodyDTO extends PickType(UserEntity, ['email'] as const) {
+  @IsNotEmpty(messageWrapper('Email не может быть пустым'))
+  @IsEmail({}, messageWrapper('Email не валиден'))
+  public email: string
+
+  @MinLength(PASSWORD_MIN_LENGTH, messageWrapper('Пароль должен быть не менее 8 символов'))
+  @Matches(
+    passwordRequiredRulesRegExp,
+    messageWrapper('Пароль должен содержать хотя бы одну заглавную букву, одну строчную букву и одну цифру'),
+  )
+  public password: string
+}
+
 export class SignupBodyDTO extends PickType(UserEntity, ['firstName', 'lastName', 'email'] as const) {
   @IsNotEmpty(messageWrapper('Email не может быть пустым'))
   @IsEmail({}, messageWrapper('Email не валиден'))

@@ -10,6 +10,11 @@ export class UserEntity extends BaseEntity {
 
   @Column({
     unique: true,
+  })
+  public username: string
+
+  @Column({
+    unique: true,
     nullable: false,
   })
   public cognitoId: string
