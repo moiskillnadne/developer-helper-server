@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AWSError, CognitoIdentityServiceProvider, Credentials } from 'aws-sdk'
 import { Environment } from '../../core/constants/environment'
-import { CognitoSignupPayloadDTO } from './dto'
+import { CognitoSignupPayloadDTO, FailedAwsReturnDTO, SuccessAwsReturnDTO } from './dto'
 
 @Injectable()
 export class CognitoService {
@@ -24,7 +24,9 @@ export class CognitoService {
     this.cognitoIdentity = new CognitoIdentityServiceProvider(this.config)
   }
 
-  async signUp(userInfo: CognitoSignupPayloadDTO): Promise<CognitoIdentityServiceProvider.SignUpResponse | AWSError> {
+  async signUp(
+    userInfo: CognitoSignupPayloadDTO,
+  ): Promise<SuccessAwsReturnDTO<CognitoIdentityServiceProvider.SignUpResponse> | FailedAwsReturnDTO> {
     const { password, email } = userInfo
 
     const params: CognitoIdentityServiceProvider.SignUpRequest = {
@@ -35,9 +37,15 @@ export class CognitoService {
 
     try {
       const result = await this.cognitoIdentity.signUp(params).promise()
-      return result
+      return {
+        isSuccess: true,
+        result,
+      }
     } catch (e) {
-      throw e
+      return {
+        isSuccess: false,
+        result: e,
+      }
     }
   }
 
