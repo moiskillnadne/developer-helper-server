@@ -14,6 +14,7 @@ async function bootstrap() {
     exposedHeaders: ['Content-Disposition'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    credentials: true,
   })
 
   app.setGlobalPrefix(globalPrefix, {
