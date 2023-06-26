@@ -9,7 +9,7 @@ async function bootstrap() {
   const globalPrefix = process.env.GLOBAL_PREFIX || 'api'
 
   app.enableCors({
-    origin: '*',
+    origin: ['http://localhost:5173', 'https://developer-helper.ru'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     exposedHeaders: ['Content-Disposition'],
     preflightContinue: false,
