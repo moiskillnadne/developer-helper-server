@@ -8,6 +8,14 @@ async function bootstrap() {
   const port = process.env.APP_PORT || 3000
   const globalPrefix = process.env.GLOBAL_PREFIX || 'api'
 
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    exposedHeaders: ['Content-Disposition'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+
   app.setGlobalPrefix(globalPrefix, {
     exclude: [],
   })
