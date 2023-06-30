@@ -4,3 +4,5 @@ export const ErrorResponseCodes = {
   VALIDATION_FAILED: 'VALIDATION_FAILED',
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
 } as const
+
+export type TErrorResponseCodes = keyof typeof ErrorResponseCodes

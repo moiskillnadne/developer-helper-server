@@ -1,14 +1,12 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CognitoService } from '../../integrations/Cognito/cognito.service'
 import { LoginBodyDTO, SignupBodyDTO } from './dto/user-controller.dto'
 import { UserCrudService } from './user.crud'
 import { SuccessResponseCodes } from '../../core/dictionary/success.codes'
-import { InternalServerError } from '../../core/errors/internal-server'
 import { ErrorResponseCodes } from '../../core/dictionary/error.codes'
 import { UserEntity } from '../../database/entities/User.entity'
-import { BadRequestError } from '../../core/errors/bad-request'
 
 @Injectable()
 export class UserService {
@@ -18,13 +16,13 @@ export class UserService {
     const user = await this.getUserByEmail(payload.email)
 
     if (!user) {
-      throw new BadRequestError('Пользователь с таким email не найден!', ErrorResponseCodes.LOGIN_FAILED)
+      throw new BadRequestException('Пользователь с таким email не найден!', { cause: ErrorResponseCodes.LOGIN_FAILED })
     }
 
     const cognitoResult = await this.cognitoService.login(user.username, payload.password)
 
     if (!cognitoResult.isSuccess) {
-      throw new BadRequestError('Неверный email или пароль!', ErrorResponseCodes.LOGIN_FAILED)
+      throw new BadRequestException('Неверный email или пароль!', { cause: ErrorResponseCodes.LOGIN_FAILED })
     }
 
     return {
@@ -45,7 +43,9 @@ export class UserService {
     const generatedUsername = uuidv4()
 
     if (user) {
-      throw new BadRequestError('Пользователь с таким email уже существует!', ErrorResponseCodes.SIGNUP_FAILED)
+      throw new BadRequestException('Пользователь с таким email уже существует!', {
+        cause: ErrorResponseCodes.SIGNUP_FAILED,
+      })
     }
 
     const cognitoResult = await this.cognitoService.signUp({
@@ -55,7 +55,9 @@ export class UserService {
     })
 
     if (!cognitoResult.isSuccess) {
-      throw new InternalServerError('Произошла ошибка во время создания аккаунта!', ErrorResponseCodes.SIGNUP_FAILED)
+      throw new InternalServerErrorException('Произошла ошибка во время создания аккаунта!', {
+        cause: ErrorResponseCodes.SIGNUP_FAILED,
+      })
     }
 
     const userCrudResult = await this.userCrudService.save({
